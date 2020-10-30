@@ -1,19 +1,18 @@
-﻿Function writeLogFile([string] $text)
+Function writeLogFile([string] $text)
 {
    Add-content $strLogfile -value $text
 }
 
 function backupFolder($Folder){
 
-    $strBasePath = "N:\System Automation Team\Projects"
-    $strBackupPath = $Folder.FolderPath.Replace("\\mwerner@zwickerpc.com\40 Projects", $strBasePath)
+    #Replace the email address with the base path
+    $strBackupPath = $Folder.FolderPath.Replace("$strOutlookBasePath", $strBackupBasePath)
     $strBackupFile = $strBackupPath + "\emails.pst"  
-    
-    If (!(test-path $strBackupPath))
-    {
-        md $strBackupPath
-    }
 
+    If (!(test-path $strBackupBasePath))
+    {
+        md $strBackupBasePath
+    }
 
     if(Test-Path $strBackupFile)
     {
@@ -21,13 +20,12 @@ function backupFolder($Folder){
         Remove-Item $strBackupFile
     }
 
-
     #add the backup file to outlook
     $mapi.AddStore($strBackupFile)
     $BackupFolder = $mapi.Folders.GetLast()
 
     #copy the emails
-    $Folder.CopyTo($BackupFolder)
+    #$Folder.CopyTo($BackupFolder)
 
     $log = "Backup done: " + $Folder.FolderPath + " to: " + $strBackupFile + " " + $Folder.Items.Count + " emails."
     writeLogFile $log
@@ -63,10 +61,18 @@ function getFolders($BaseFolder)
 
 }
 
-
+#========== main block ==========================
 #It starts here. Powershell requires that functions are written before they are used
 
-$strLogfile = "c:\users\mwerner\outlook_backup.txt"
+$strLogfile = "c:\logs\outlook_backup.txt"
+$strOutlookProjectFolder = "Projects"
+$strOutlookBasePath = "\\email@address.com\" + $strOutlookProjectFolder
+
+#The path to the backup folder
+$strBackupBasePath = "D:\Backup\Projects"
+    
+#===== No changes should be needed below this line ===================================
+
 
 # Instantiate a new Outlook object
 $ol = new-object -comobject "Outlook.Application";
@@ -75,8 +81,9 @@ $ol = new-object -comobject "Outlook.Application";
 $mapi = $ol.getnamespace("mapi");
 
 # Get the project folder
-$ProjectFolder = $mapi.GetDefaultFolder(6).parent.folders("40 Projects")
-
+# GetDefaultFolder(6) is the inbox, my projects are not in the inbox so I go to the parent 
+# and get the project folder
+$ProjectFolder = $mapi.GetDefaultFolder(6).parent.folders($strOutlookProjectFolder)
 
 $LogTime = Get-Date -UFormat "%m/%d/%Y %I:%M:%S %p"
 $log = "========== Backup started ========== " + $LogTime + " ==========" 
