@@ -3,21 +3,14 @@ if ((get-date).DayOfWeek -ne "Saturday" -and (Get-Date).DayOfWeek -ne "Sunday" -
 {
     start outlook
     start chrome
-    start C:\Users\mwerner\Keepass\KeePass.exe
-    start C:\Users\mwerner\AppData\Local\slack\slack.exe
-    start "C:\Users\mwerner\AppData\Local\JetBrains\IntelliJ IDEA Community Edition 2020.2.3\bin\idea64.exe"
-    start "C:\Program Files\IDM Computer Solutions\UEStudio\UEStudio.exe"
+    #start whatever else you want to start    
 
     if ((get-date).DayOfWeek -eq "Thursday")
     {
-        start F:\Accruals.xlsx
+        #start 
     }
 
 
-    if ((get-date).DayOfWeek -eq "Friday")
-    {
-        start C:\Users\mwerner\AppData\Roaming\Zoom\bin\Zoom.exe
-    }
 
 
     #assume this has been run already earlier this day so a clean-up is not necessary
@@ -34,7 +27,7 @@ if ((get-date).DayOfWeek -ne "Saturday" -and (Get-Date).DayOfWeek -ne "Sunday" -
         Get-ChildItem -Path $temp -Recurse | Where-Object { $_.PSIsContainer -and (Get-ChildItem -Path $_.FullName -Recurse | Where-Object { !$_.PSIsContainer }) -eq $null } | Remove-Item -Recurse
 
         #rename all email archives
-        $ProjectFolder="N:\System Automation Team\Projects"
+        $ProjectFolder="whereever the projects are"
         $today = '_' + (Get-Date -UFormat "%Y%m%d") + '.pst.' 
         Get-ChildItem $ProjectFolder\emails.pst -Recurse | Rename-Item -NewName {$_.Name -replace '.pst', $today}
 
