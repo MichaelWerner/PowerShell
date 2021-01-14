@@ -1,4 +1,7 @@
-﻿#run only between 8 am and 5 pm Monday to Friday
+#Needed for the message box. Won't run without except when started from the ise.
+Add-Type -AssemblyName PresentationFramework
+
+ #run only between 8 am and 5 pm Monday to Friday
 if ((get-date).DayOfWeek -ne "Saturday" -and (Get-Date).DayOfWeek -ne "Sunday" -and (Get-Date).Hour -ge 8 -and (Get-Date).Hour -le 17) 
 {
     start outlook
